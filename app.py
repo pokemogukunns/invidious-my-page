@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 CORS(app)
 
-@app.route('/api', methods=['GET'])
+@app.route('/apis', methods=['GET'])
 def get_video_data():
     # クエリパラメータからvideoidを取得
     videoid = request.args.get('v')
