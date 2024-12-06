@@ -4,15 +4,14 @@ import subprocess
 import json
 
 app = Flask(__name__)
-
 CORS(app)
 
 @app.route('/apis', methods=['GET'])
-def get_video_data():
+def get_video_data_apisan():
     # クエリパラメータからvideoidを取得
     videoid = request.args.get('v')
     if not videoid:
-        return "Video ID is required", 400
+        return jsonify({'error': 'Video ID is required'}), 400
     
     try:
         # curlコマンドを使って、外部APIからデータを取得
@@ -30,16 +29,16 @@ def get_video_data():
                 # リンクを改行で区切って表示
                 return '\n'.join(links)
             else:
-                return "No formatStreams found in the response", 500
+                return jsonify({'error': "No formatStreams found in the response"}), 500
         else:
             # curlコマンドのエラー
-            return f"Failed to fetch data: {result.stderr}", 500
+            return jsonify({'error': f"Failed to fetch data: {result.stderr}"}), 500
     except Exception as e:
-        return str(e), 500
-        
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api', methods=['GET'])
-def get_video_data():
+def get_video_data_api():
     # クエリパラメータからvideoidを取得
     videoid = request.args.get('v')
     if not videoid:
@@ -54,10 +53,11 @@ def get_video_data():
             # 取得したJSONデータをレスポンスとして返す
             return jsonify(json.loads(result.stdout))
         else:
-            # エラーが発生した場合
+            # curlコマンドのエラー
             return jsonify({'error': f"Failed to fetch data: {result.stderr}"}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
+
